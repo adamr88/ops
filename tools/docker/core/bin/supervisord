@@ -1,0 +1,12 @@
+#!/bin/bash
+
+set -ex
+
+export SCREEN=${SCREEN:-"0"}
+export DISPLAY=${DISPLAY:-":0"}
+export DIMENSIONS=${DIMENSIONS:-"1920x1080x24"}
+export VNC_PASS=${VNC_PASS}
+
+/usr/bin/supervisord && supervisorctl start all && tail -f /var/log/supervisor/supervisord.log
+
+exit 0

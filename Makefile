@@ -1,3 +1,2 @@
-include ./tools/build/makefile/Makefile.core
-
+include ./tools/build/makefile/Makefile.ops
 # not intended for modification

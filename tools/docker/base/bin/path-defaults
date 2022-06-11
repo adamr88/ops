@@ -1,0 +1,5 @@
+set -ex
+
+echo "Defaults	secure_path="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/kali/.local/bin""
+
+exit 0

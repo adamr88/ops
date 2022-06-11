@@ -1,0 +1,14 @@
+SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(SELF_DIR)Makefile.core
+
+########################
+# CONTAINER AUTOMATION #
+########################
+
+up:
+> -docker-compose up -d 
+.PHONY: start
+
+down:
+> -docker-compose down
+.PHONY: start

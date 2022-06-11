@@ -1,0 +1,5 @@
+set -ex
+
+apt-get -yqq update && apt-get -yqq dist-upgrade && apt-get -yqq autoremove && apt-get clean
+
+exit 0

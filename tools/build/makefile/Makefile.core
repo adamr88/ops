@@ -1,13 +1,14 @@
 SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
 include $(SELF_DIR)Makefile.base
+include $(CURDIR)/.env
 
 ###################
 # CORE AUTOMATION #
 ###################
 
 build:
-> for dir in $(shell find $(WORKSPACE_DIR) -type f -name Dockerfile -exec dirname {} \; ); do 
-> pushd $$dir && make image && popd
+> for img in base core kali; do 
+> pushd tools/docker/$$img && make image && popd
 > done
 .PHONY: build
 
@@ -17,6 +18,10 @@ prepare:
 
 start:
 > # nothing to be done for start 
+.PHONY: start
+
+stop:
+> # nothing to be done for stop 
 .PHONY: start
 
 ######################
@@ -56,5 +61,5 @@ compile:
 .PHONY: compile 
 
 clean:
-> # nothing to be done for clean 
+> -docker image prune -f && docker volume prune -f 
 .PHONY: clean 
