@@ -1,0 +1,1 @@
+FROM kalilinux/kali-last-release@sha256:950a1c068f4e400020be3b0d561159584e729c0c5931a2bd22503479634cd14f

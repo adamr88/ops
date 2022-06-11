@@ -1,0 +1,23 @@
+###############
+# MAKE CONFIG #
+###############
+
+SHELL := bash
+.ONESHELL:
+.SHELLFLAGS := -eu -o pipefail -c
+.DELETE_ON_ERROR:
+MAKEFLAGS += --warn-undefined-variables
+MAKEFLAGS += --no-builtin-rules
+MAKEFLAGS += --no-print-directory
+
+ifeq ($(origin .RECIPEPREFIX), undefined)
+  $(error This Make does not support .RECIPEPREFIX. Please use GNU Make 4.0 or later)
+endif
+.RECIPEPREFIX = >
+
+SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+WORKSPACE_DIR := $(abspath $(SELF_DIR)/../../..)
+
+GIT_SHA = $(shell git log -1 --format=format:%H)
+
+# PATH := $(CURDIR)/bin:$(PATH)

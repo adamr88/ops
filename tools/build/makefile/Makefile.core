@@ -1,0 +1,60 @@
+SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(SELF_DIR)Makefile.base
+
+###################
+# CORE AUTOMATION #
+###################
+
+build:
+> for dir in $(shell find $(WORKSPACE_DIR) -type f -name Dockerfile -exec dirname {} \; ); do 
+> pushd $$dir && make image && popd
+> done
+.PHONY: build
+
+prepare:
+> # nothing to be done for prepare 
+.PHONY: prepare
+
+start:
+> # nothing to be done for start 
+.PHONY: start
+
+######################
+# QUALITY AUTOMATION #
+######################
+
+lint:
+> # nothing to be done for lint 
+.PHONY: lint
+
+format:
+> # nothing to be done for format 
+.PHONY: format 
+
+test:
+> # nothing to be done for test 
+.PHONY: test
+
+pretest:
+> # nothing to be done for pretest 
+.PHONY: pretest
+
+posttest:
+> # nothing to be done for posttest 
+.PHONY: posttest 
+
+e2e:
+> # nothing to be done for e2e 
+.PHONY: e2e
+
+#############
+# ARTIFACTS #
+#############
+
+compile:
+> # nothing to be done for compile 
+.PHONY: compile 
+
+clean:
+> # nothing to be done for clean 
+.PHONY: clean 

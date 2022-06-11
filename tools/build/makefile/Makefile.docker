@@ -1,0 +1,10 @@
+SELF_DIR := $(dir $(lastword $(MAKEFILE_LIST)))
+include $(SELF_DIR)Makefile.base
+
+IMAGE_NAME ?= ops/unknown 
+IMAGE_TAG ?= latest
+IMAGE_BUILD_PATH ?= .
+
+image:
+> docker build -t $(IMAGE_NAME):$(IMAGE_TAG) -f ${CURDIR}/Dockerfile $(IMAGE_BUILD_PATH)
+.PHONY: image
